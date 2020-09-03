@@ -1,0 +1,26 @@
+{
+  "name": "pdf-generator-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CuriousSugam/pdf-generator-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CuriousSugam/pdf-generator-server/issues"
+  },
+  "homepage": "https://github.com/CuriousSugam/pdf-generator-server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4",
+    "puppeteer": "^5.2.1"
+  }
+}
