@@ -1,0 +1,16 @@
+service: pdf-generator-server
+
+provider:
+ name: aws
+ runtime: nodejs10.19
+ memorySize: 128
+ timeout: 10
+ stage: development
+ region: eu-central-1
+
+functions:
+ api:
+   handler: lambda.universal
+   events:
+     - http: ANY {proxy+}
+     - http: ANY /
