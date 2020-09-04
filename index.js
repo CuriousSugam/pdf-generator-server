@@ -55,12 +55,12 @@ app.post('/', async (req, res) => {
 	// 	content;
 	// // '</body></html>';
 
-	const browser = await puppeteer.launch({ headless: false });
+	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
-	await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
+	await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 	// const tempCss = 'h6{color: red}';
 
-	await page.goto(`data:text/html;charset=UTF-8,${content}`, {
+	await page.setContent(`${content}`, {
 		waitUntil: 'networkidle2',
 	});
 
@@ -74,15 +74,20 @@ app.post('/', async (req, res) => {
 		// await page.addStyleTag({
 		// 	path: path.join(`file:${process.cwd()}`, 'temp.css'),
 		// });
-		await page.addScriptTag({ url: 'https://d3js.org/d3.v5.min.js' });
+		// await page.addScriptTag({ url: 'https://d3js.org/d3.v5.min.js' });
 		await page.addStyleTag({ content: css });
 	}
 
-	// const buffer = await page.pdf(options);
+	// fs.writeFile('test.html', content, function (err) {
+	// 	if (err) console.log(err);
+	// 	console.log('saved!!!!!!!!');
+	// });
 
-	// await browser.close();
+	const buffer = await page.pdf(options);
+
+	await browser.close();
 	res.type('application/pdf');
-	// res.send(buffer);
+	res.send(buffer);
 });
 
 app.listen(port, () => {
