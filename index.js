@@ -15,6 +15,7 @@ app.post('/', async (req, res) => {
 	const {
 		content,
 		css,
+		linkHref,
 		options: {
 			fileName,
 			format,
@@ -44,6 +45,7 @@ app.post('/', async (req, res) => {
 		// },
 		printBackground: true,
 		path: 'temp.pdf',
+		format: 'A4',
 	};
 	// console.log(content);
 	// var tempContent =
@@ -55,7 +57,7 @@ app.post('/', async (req, res) => {
 	// 	content;
 	// // '</body></html>';
 
-	const browser = await puppeteer.launch();
+	const browser = await puppeteer.launch({ headless: false });
 	const page = await browser.newPage();
 	await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 	// const tempCss = 'h6{color: red}';
@@ -76,6 +78,11 @@ app.post('/', async (req, res) => {
 		// });
 		// await page.addScriptTag({ url: 'https://d3js.org/d3.v5.min.js' });
 		await page.addStyleTag({ content: css });
+	}
+	if (linkHref && linkHref.length) {
+		linkHref.forEach(async (href) => {
+			await page.addStyleTag({ url: href });
+		});
 	}
 
 	// fs.writeFile('test.html', content, function (err) {
