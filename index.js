@@ -25,15 +25,15 @@ app.post('/', async (req, res) => {
 		},
 	} = req.body.template;
 
-	fs.writeFile('temp.css', css, (err) => {
-		if (err) throw err;
-		console.log('The css has been saved!');
-	});
+	// fs.writeFile('temp.css', css, (err) => {
+	// 	if (err) throw err;
+	// 	console.log('The css has been saved!');
+	// });
 
-	fs.writeFile('temp.html', content, (err) => {
-		if (err) throw err;
-		console.log('The html has been saved!');
-	});
+	// fs.writeFile('temp.html', content, (err) => {
+	// 	if (err) throw err;
+	// 	console.log('The html has been saved!');
+	// });
 
 	var options = {
 		headerTemplate: '<p></p>',
@@ -46,6 +46,7 @@ app.post('/', async (req, res) => {
 		printBackground: true,
 		path: 'temp.pdf',
 		format: 'A4',
+		landscape: true,
 	};
 	// console.log(content);
 	// var tempContent =
@@ -57,7 +58,9 @@ app.post('/', async (req, res) => {
 	// 	content;
 	// // '</body></html>';
 
-	const browser = await puppeteer.launch({ headless: false });
+	const browser = await puppeteer.launch({
+		headless: false,
+	});
 	const page = await browser.newPage();
 	await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 	// const tempCss = 'h6{color: red}';
@@ -72,23 +75,23 @@ app.post('/', async (req, res) => {
 	// 	waitUntil: 'networkidle2',
 	// });
 
-	if (css) {
+	if (Array.isArray(css) && css.length > 0) {
 		// await page.addStyleTag({
 		// 	path: path.join(`file:${process.cwd()}`, 'temp.css'),
 		// });
 		// await page.addScriptTag({ url: 'https://d3js.org/d3.v5.min.js' });
-		await page.addStyleTag({ content: css });
+		css.forEach(async (style) => {
+			await page.addStyleTag({
+				content: style,
+			});
+		});
+		// await page.addStyleTag({ content: css });
 	}
 	if (linkHref && linkHref.length) {
 		linkHref.forEach(async (href) => {
 			await page.addStyleTag({ url: href });
 		});
 	}
-
-	// fs.writeFile('test.html', content, function (err) {
-	// 	if (err) console.log(err);
-	// 	console.log('saved!!!!!!!!');
-	// });
 
 	const buffer = await page.pdf(options);
 
