@@ -9,10 +9,9 @@ const port = 3000;
 const puppeteer = require('puppeteer');
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 
 app.post('/', async (req, res) => {
-	console.log('here', req.body.template);
 	// fs.writeFile('temp.html', req.body.template.content, (err) => {
 	// 	if (err) throw err;
 	// 	console.log('The file has been saved!');
@@ -20,6 +19,7 @@ app.post('/', async (req, res) => {
 
 	const {
 		content,
+		css,
 		options: {
 			fileName,
 			format,
@@ -28,11 +28,6 @@ app.post('/', async (req, res) => {
 			displayHeaderFooter,
 		},
 	} = req.body.template;
-
-	var tempContent =
-		'<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Our Cool PDF Report</title><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" /><script src="https://d3js.org/d3.v5.min.js"></script></head><body>' +
-		content +
-		'</body></html>';
 
 	var options = {
 		headerTemplate: '<p></p>',
@@ -46,10 +41,20 @@ app.post('/', async (req, res) => {
 		path: 'temp.pdf',
 	};
 
-	const browser = await puppeteer.launch();
+	// var tempContent =
+	// 	'<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" /><style></style></head><body>' +
+	// 	content +
+	// 	'</body></html>';
+
+	const browser = await puppeteer.launch({ headless: false });
 	const page = await browser.newPage();
 	await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
-	await page.goto(`data:text/html;charset=UTF-8,${tempContent}`, {
+	// const tempCss = 'h6{color: red}';
+	if (css) {
+		await page.addStyleTag({ content: css });
+		// await page.addStyleTag({ content: tempCss });
+	}
+	await page.goto(`data:text/html;charset=UTF-8,${content}`, {
 		waitUntil: 'networkidle2',
 	});
 	const buffer = await page.pdf(options);
