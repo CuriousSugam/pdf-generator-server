@@ -21,8 +21,8 @@ app.post('/generate', async (req, res) => {
 	const browser = await puppeteer.launch({
 		args: chromium.args,
 		executablePath,
-		// headless: false,
-		// ignoreHTTPSErrors: true,
+		headless: true,
+		ignoreHTTPSErrors: true,
 	});
 	console.log('Browser launched...');
 	const page = await browser.newPage().catch(error => {
@@ -85,10 +85,8 @@ app.post('/generate', async (req, res) => {
 	console.log('Generate PDF begin...');
 
 	await page.emulateMediaType('screen');
-	const buffer = await page.pdf(options).then(() => {
-		console.log('Generate PDF completed...');
-	}).catch(error => {
-		console.log("Error converting the page to pdf", error);
+	const buffer = await page.pdf(options).catch(error => {
+		console.log('Error while converting to PDF. ', error);
 	});
 
 	await browser.close().then(() => {
