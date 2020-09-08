@@ -4,8 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "node index.js",
-		"dev": "nodemon index.js",
+		"start": "nodemon app-local.js",
+		"dev": "nodemon app-local.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
@@ -19,12 +19,16 @@
 	},
 	"homepage": "https://github.com/CuriousSugam/pdf-generator-server#readme",
 	"dependencies": {
+		"aws-serverless-express": "^3.3.8",
 		"body-parser": "^1.19.0",
+		"chrome-aws-lambda": "^5.2.1",
 		"cors": "^2.8.5",
+		"dotenv": "^8.2.0",
 		"express": "^4.17.1",
-		"puppeteer": "^5.2.1"
+		"puppeteer-core": "^5.2.1"
 	},
 	"devDependencies": {
-		"nodemon": "^2.0.4"
+		"nodemon": "^2.0.4",
+		"puppeteer": "^5.2.1"
 	}
 }
