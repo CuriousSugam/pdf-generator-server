@@ -15,9 +15,14 @@ app.post('/generate', async (req, res) => {
 	const { content, css, linkHref } = req.body.template;
 
 	const executablePath = IS_LAMBDA ? await chromium.executablePath : process.env.CHROMIUM_EXECUTABLE_PATH;
+	console.log('Chromium executable path: ', executablePath);
+
+	console.log(chromium.args);
 	const browser = await puppeteer.launch({
 		args: chromium.args,
 		executablePath,
+		// headless: false,
+		// ignoreHTTPSErrors: true,
 	});
 	console.log('Browser launched...');
 	const page = await browser.newPage().catch(error => {
@@ -34,7 +39,7 @@ app.post('/generate', async (req, res) => {
 
 	console.log('Successfullly set the viewport...');
 	await page.setContent(`${content}`, {
-		waitUntil: 'networkidle2',
+		waitUntil: 'networkidle0',
 	}).catch(error => {
 		console.log("Error adding the content");
 		throw error;
@@ -45,7 +50,7 @@ app.post('/generate', async (req, res) => {
 	if (Array.isArray(css) && css.length > 0) {
 		for (let i = 0; i < css.length; i++) {
 			await page.addStyleTag({
-				content: style,
+				content: css[i],
 			}).catch(error => {
 				console.log("Error while adding styles: ", error);
 			});
@@ -57,7 +62,7 @@ app.post('/generate', async (req, res) => {
 	if (Array.isArray(linkHref) && linkHref.length > 0) {
 		for (let i = 0; i < linkHref.length; i++) {
 			await page.addStyleTag({
-				url: href,
+				url: linkHref[i],
 			}).catch(error => {
 				console.log("Error while adding links: ", error);
 			});
@@ -79,19 +84,19 @@ app.post('/generate', async (req, res) => {
 	};
 	console.log('Generate PDF begin...');
 
-	const buffer = await page.pdf(options).catch(error => {
+	const buffer = await page.pdf(options).then(() => {
+		console.log('Generate PDF completed...');
+	}).catch(error => {
 		console.log("Error converting the page to pdf", error);
 	});
 
-	console.log('Generate PDF completed...');
-
-	await browser.close().catch(error => {
+	await browser.close().then(() => {
+		console.log('Browser closed.');
+	}).catch(error => {
 		console.log("error closing the headless browser", error);
 	});
 
-	console.log('Browser closed.');
-
-	res.type('application/pdf');
+	res.contentType('application/pdf');
 	res.send(buffer);
 });
 
