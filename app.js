@@ -39,7 +39,7 @@ app.post('/generate', async (req, res) => {
 
 	console.log('Successfullly set the viewport...');
 	await page.setContent(`${content}`, {
-		waitUntil: 'networkidle0',
+		waitUntil: ['domcontentloaded', 'networkidle0'],
 	}).catch(error => {
 		console.log("Error adding the content");
 		throw error;
@@ -84,6 +84,7 @@ app.post('/generate', async (req, res) => {
 	};
 	console.log('Generate PDF begin...');
 
+	await page.emulateMediaType('screen');
 	const buffer = await page.pdf(options).then(() => {
 		console.log('Generate PDF completed...');
 	}).catch(error => {
