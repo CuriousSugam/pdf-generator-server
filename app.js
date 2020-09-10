@@ -85,7 +85,10 @@ app.post('/generate', async (req, res) => {
 	console.log('Generate PDF begin...');
 
 	await page.emulateMediaType('screen');
-	const buffer = await page.pdf(options).catch(error => {
+	const buffer = await page.pdf(options).then(res => {
+		console.log("Successfully converted to PDf.")
+		return res;
+	}).catch(error => {
 		console.log('Error while converting to PDF. ', error);
 	});
 
