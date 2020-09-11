@@ -11,6 +11,7 @@ app.use(bodyParser.json({ limit: '1mb' }));
 const IS_LAMBDA = process.env.IS_LAMBDA;
 
 app.post('/generate', async (req, res) => {
+	console.log(req.socket.bufferSize);
 	console.log('Initiated processing...');
 	const { content, css, linkHref } = req.body.template;
 
@@ -99,6 +100,9 @@ app.post('/generate', async (req, res) => {
 	});
 
 	res.contentType('application/pdf');
+	
+	console.log("byte lenth of the generated pdf: ", buffer.byteLength)
+	
 	res.send(buffer);
 });
 
